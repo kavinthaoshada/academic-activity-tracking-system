@@ -119,7 +119,6 @@ class UserController extends Controller
             'course_ids.*' => ['exists:courses,id'],
         ]);
 
-        // Wipe old assignments and securely sync new ones
         $user->courseAssignments()->delete();
 
         if ($request->has('course_ids')) {

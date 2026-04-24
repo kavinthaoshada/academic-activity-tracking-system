@@ -20,7 +20,6 @@ class Course extends Model
     public function faculty()         { return $this->hasManyThrough(User::class, CourseAssignment::class, 'course_id', 'id', 'id', 'user_id'); }
     public function weeklySessions()  { return $this->hasMany(WeeklySession::class); }
 
-    // Weekly target based on semester total_weeks (the 15-week multiplier)
     public function getWeeklyTargetAttribute(): float
     {
         $totalWeeks = $this->batch->programme->total_weeks;

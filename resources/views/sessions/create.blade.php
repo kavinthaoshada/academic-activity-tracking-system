@@ -64,6 +64,16 @@
     @endif
 </div>
 
+@if($week->is_locked)
+<div class="alert alert-danger" style="margin-bottom:20px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    <div class="alert-message">
+        <strong>Week Locked</strong>
+        <div>This academic week has been locked by the administration. You can view your logs but cannot edit them.</div>
+    </div>
+</div>
+@endif
+
 <form method="POST" action="{{ route('sessions.store') }}">
     @csrf
     <input type="hidden" name="academic_week_id" value="{{ $week->id }}">
@@ -128,7 +138,8 @@
                                    value="{{ old("sessions.{$course->id}.planned", $planned) }}"
                                    class="form-control session-planned"
                                    data-row="{{ $course->id }}"
-                                   min="0" max="20" style="padding:7px 10px">
+                                   min="0" max="20" style="padding:7px 10px"
+                                   {{ $week->is_locked ? 'disabled' : '' }}>
                         </td>
                         <td>
                             <input type="number"
@@ -136,7 +147,8 @@
                                    value="{{ old("sessions.{$course->id}.actual", $actual) }}"
                                    class="form-control session-actual"
                                    data-row="{{ $course->id }}"
-                                   min="0" max="20" style="padding:7px 10px">
+                                   min="0" max="20" style="padding:7px 10px"
+                                   {{ $week->is_locked ? 'disabled' : '' }}>
                         </td>
                         <td>
                             <span class="variance-display" id="var-{{ $course->id }}"
@@ -153,7 +165,8 @@
                                    value="{{ old("sessions.{$course->id}.remarks", $existing?->remarks) }}"
                                    class="form-control"
                                    placeholder="Optional note…"
-                                   style="padding:7px 10px;font-size:.8rem">
+                                   style="padding:7px 10px;font-size:.8rem"
+                                   {{ $week->is_locked ? 'disabled' : '' }}>
                         </td>
                     </tr>
                     @endforeach
@@ -163,10 +176,13 @@
 
         <div class="card-footer">
             <a href="{{ route('sessions.index') }}" class="btn btn-ghost">Cancel</a>
+            
+            @if(!$week->is_locked)
             <button type="submit" class="btn btn-primary">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
                 Save All Sessions
             </button>
+            @endif
         </div>
     </div>
 </form>

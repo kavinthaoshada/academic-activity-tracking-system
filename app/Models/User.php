@@ -27,7 +27,6 @@ class User extends Authenticatable
         ];
     }
 
-    // Relationships
     public function role()
     {
         return $this->belongsTo(Role::class);
@@ -53,7 +52,6 @@ class User extends Authenticatable
         return $this->hasMany(StaffInvitation::class, 'invited_by');
     }
 
-    // Role helpers
     public function isAdmin(): bool
     {
         return $this->role?->slug === 'admin';

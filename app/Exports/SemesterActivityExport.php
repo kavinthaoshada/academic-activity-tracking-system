@@ -92,7 +92,7 @@ class SemesterActivityExport implements FromCollection, WithTitle, WithEvents, W
                 $sheet->setCellValue('A4', "WEEK - {$this->weekNumber}");
 
                 $sheet->getStyle('A1:L4')->applyFromArray([
-                    'fill' => ['fillType' => Fill::FILL_SOLID, 'color' => ['argb' => 'FF0F766E']], // UI Teal
+                    'fill' => ['fillType' => Fill::FILL_SOLID, 'color' => ['argb' => 'FF0F766E']],
                     'font' => ['color' => ['argb' => 'FFFFFFFF'], 'bold' => true],
                     'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
                 ]);
