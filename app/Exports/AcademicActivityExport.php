@@ -87,26 +87,11 @@ class AcademicActivityExport implements FromCollection, WithTitle, WithEvents, W
                     $sheet->setCellValue($cell, $value);
                 }
 
-                // $sheet->getStyle('A6:L6')->applyFromArray([
-                //     'fill' => [
-                //         'fillType' => Fill::FILL_SOLID, 
-                //         'color' => ['argb' => 'FF004E6F']
-                //     ],
-                //     'font' => [
-                //         'bold' => true, 
-                //         'color' => ['argb' => 'FFFFFFFF']
-                //     ],
-                //     'alignment' => [
-                //         'horizontal' => Alignment::HORIZONTAL_CENTER, 
-                //         'wrapText' => true
-                //     ],
-                // ]);
-
                 $sheet->mergeCells('A1:L1'); $sheet->mergeCells('A2:L2');
                 $sheet->mergeCells('A3:L3'); $sheet->mergeCells('A4:L4');
 
                 $sheet->getStyle('A1:L4')->applyFromArray([
-                    'fill' => ['fillType' => Fill::FILL_SOLID, 'color' => ['argb' => 'FF0F766E']], // Perfect UI Teal
+                    'fill' => ['fillType' => Fill::FILL_SOLID, 'color' => ['argb' => 'FF0F766E']],
                     'font' => ['color' => ['argb' => 'FFFFFFFF'], 'bold' => true],
                     'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
                 ]);

@@ -12,36 +12,6 @@ use Illuminate\Support\Facades\Storage;
 
 class ReportController extends Controller
 {
-    // public function index(Request $request)
-    // {
-    //     $user = $request->user();
-
-    //     $batches = $user->isAdmin()
-    //         ? Batch::with('programme')->where('is_active', true)->get()
-    //         : Batch::whereHas('courses.assignments', fn ($q) => $q->where('user_id', $user->id))
-    //                ->with('programme')
-    //                ->get();
-
-    //     $weeks = collect();
-    //     $previewData = collect();
-
-    //     if ($request->filled('batch_id')) {
-    //         $weeks = AcademicWeek::where('batch_id', $request->batch_id)
-    //             ->orderBy('week_number')
-    //             ->get();
-    //     }
-
-    //     if ($request->filled('batch_id') && $request->filled('week_id')) {
-    //         $previewData = $this->getPreviewData(
-    //             Batch::findOrFail($request->batch_id),
-    //             AcademicWeek::findOrFail($request->week_id),
-    //             $user
-    //         );
-    //     }
-
-    //     return view('reports.index', compact('batches', 'weeks', 'previewData'));
-    // }
-
     public function index(Request $request)
     {
         $user = $request->user();
@@ -63,7 +33,6 @@ class ReportController extends Controller
                 ->orderBy('week_number')->get();
         }
 
-        // Weekly preview (existing)
         if ($previewType === 'weekly' && $request->filled('batch_id') && $request->filled('week_id')) {
             $previewData = $this->getPreviewData(
                 Batch::findOrFail($request->batch_id),
@@ -72,14 +41,12 @@ class ReportController extends Controller
             );
         }
 
-        // Course history preview (new)
         if ($previewType === 'course' && $request->filled('course_id')) {
             $course = \App\Models\Course::with('batch.programme')->findOrFail($request->course_id);
             $previewData = $this->getCoursePreviewData($course, $user);
             $previewMeta['course'] = $course;
         }
 
-        // Semester preview (new)
         if ($previewType === 'semester' && $request->filled('semester') && $request->filled('week_number')) {
             $previewData = $this->getSemesterPreviewData($request->semester, $request->week_number, $user);
             $previewMeta['semester'] = $request->semester;
@@ -174,7 +141,6 @@ class ReportController extends Controller
 
     private function getCoursePreviewData(\App\Models\Course $course, $user): \Illuminate\Support\Collection
     {
-        // Check authorization for non-admins
         if (!$user->isAdmin()) {
             $isAssigned = $course->assignments()->where('user_id', $user->id)->exists();
             abort_unless($isAssigned, 403, 'You are not assigned to this course.');
@@ -192,7 +158,7 @@ class ReportController extends Controller
     $batches = \App\Models\Batch::where('semester', $semester)
         ->where('is_active', true)->get();
 
-    $result = collect(); // keyed by batch label
+    $result = collect();
 
     foreach ($batches as $batch) {
         $week = $batch->academicWeeks()->where('week_number', $weekNumber)->first();
@@ -208,7 +174,6 @@ class ReportController extends Controller
 
         if ($sessions->isEmpty()) continue;
 
-        // Store as [ 'BCA Sem 1 Div A' => [ course_id => [sessions] ] ]
         $result->put($batch->full_label, $sessions->groupBy('course_id'));
     }
 

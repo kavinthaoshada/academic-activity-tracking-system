@@ -8,19 +8,6 @@ use App\Models\WeeklySession;
 
 class SessionPlanningService
 {
-    // public function calculatePlannedSessions(Course $course, AcademicWeek $week): int
-    // {
-    //     $weeklyTarget = $course->total_hours / $course->batch->programme->total_weeks;
-
-    //     return match ($week->week_type) {
-    //         'full'    => (int) round($weeklyTarget),
-    //         'reduced' => 1,
-    //         'holiday' => 0,
-    //         'custom'  => (int) round($weeklyTarget * ($week->working_days / 6)),
-    //         default   => (int) round($weeklyTarget),
-    //     };
-    // }
-
     public function calculatePlannedSessions(Course $course, AcademicWeek $week, bool $ignoreOverride = false): int
     {
         if (!$ignoreOverride && is_array($week->planned_session_overrides) && isset($week->planned_session_overrides[$course->id])) {

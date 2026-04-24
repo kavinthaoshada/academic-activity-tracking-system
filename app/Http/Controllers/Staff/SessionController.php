@@ -15,9 +15,6 @@ class SessionController extends Controller
 {
     public function __construct(private SessionPlanningService $planningService) {}
 
-    /**
-     * List all session entries with batch/week filtering.
-     */
     public function index(Request $request)
     {
         $user = $request->user();
@@ -27,7 +24,6 @@ class SessionController extends Controller
             : Batch::whereHas('courses.assignments', fn ($q) => $q->where('user_id', $user->id))
                    ->with('programme')->get();
 
-        // Weeks for the selected batch
         $weeks = collect();
         if ($request->filled('batch_id')) {
             $weeks = AcademicWeek::where('batch_id', $request->batch_id)
@@ -52,10 +48,6 @@ class SessionController extends Controller
         return view('sessions.index', compact('sessions', 'batches', 'weeks'));
     }
 
-    /**
-     * Show the session entry form for a specific batch + week.
-     * Pre-populates planned sessions based on week-type business rules.
-     */
     public function create(Request $request)
     {
         $user = $request->user();
@@ -89,7 +81,6 @@ class SessionController extends Controller
                         ->with(['assignments.user', 'weeklySessions' => fn ($q) => $q->where('academic_week_id', $week->id)])
                         ->get();
 
-            // Pre-calculate planned sessions based on week type
             $plannedDefaults = $courses->mapWithKeys(fn ($course) => [
                 $course->id => $this->planningService->calculatePlannedSessions($course, $week),
             ]);
@@ -98,11 +89,11 @@ class SessionController extends Controller
         return view('sessions.create', compact('batches', 'weeks', 'courses', 'week', 'plannedDefaults'));
     }
 
-    /**
-     * Save/update session entries for all courses in the submitted form.
-     */
     public function store(StoreSessionRequest $request)
     {
+        $week = AcademicWeek::findOrFail($request->academic_week_id);
+        abort_if($week->is_locked, 403, 'This week is locked by the administration. You cannot modify session records for a locked week.');
+
         foreach ($request->sessions as $courseId => $sessionData) {
             $this->planningService->saveSession([
                 'course_id'        => $courseId,
@@ -118,9 +109,6 @@ class SessionController extends Controller
             ->with('success', 'Session data saved successfully.');
     }
 
-    /**
-     * Show a single session entry detail.
-     */
     public function show(WeeklySession $session)
     {
         $session->load(['course.batch.programme', 'academicWeek', 'user']);
